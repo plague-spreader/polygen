@@ -18,7 +18,7 @@ parodying habits, stereotypes and trends (of Italy in the 2000s).
 The grammar meta-language are written in a slightly more expressive version of
 EBNF (Extended Backus-Naur Form).
 Refer to the manuals in the `manual` directory (currently only the Italian
-version is available).
+version is available) or to the `Quick grammar description` below.
 
 ## Usage
 
