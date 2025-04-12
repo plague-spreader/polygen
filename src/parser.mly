@@ -62,7 +62,7 @@ let posel loc atomss =
 let expand l =
     let rec make n x = if n = 0 then [] else x :: (make (n-1) x) in
     let k =
-        let l' = sort (fun (n, _) (n', _) -> compare n n') l
+        let l' = List.sort (fun (n, _) (n', _) -> Int.compare n n') l
         in
             match l' with
                 []          -> raise (Unexpected "parser.mly: expand")

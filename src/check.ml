@@ -28,7 +28,7 @@ module Check =
   	module LabelLoc : Set.OrderedType with type t = symbol * Err.loc option =
 	  struct
 	  	type t = symbol * Err.loc option
-	  	let compare (lb1, _) (lb2, _) = compare lb1 lb2
+	  	let compare (lb1, _) (lb2, _) = Label.compare lb1 lb2
 	  end
 
 	module LabelLocSet =
@@ -37,7 +37,7 @@ module Check =
 
 	  	let of_labels labels = List.fold_left (fun lbs lb -> add (lb, None) lbs) empty labels
 	  	let occurs lb lbs = mem (lb, None) lbs
-        let pretty lbs = "{ " ^ (flatten_strings ", " (map fst (elements lbs))) ^ " }"
+        let pretty lbs = "{ " ^ (flatten_strings ", " (List.map fst (elements lbs))) ^ " }"
 	  end
 
 

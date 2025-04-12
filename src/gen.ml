@@ -31,7 +31,7 @@ module Gen =
             []                 -> ""
           | B.Epsilon :: l'    -> post cap spc l'
           | B.Concat :: l'     -> post cap "" l'
-          | B.Capitalize :: l' -> post String.capitalize spc l'
+          | B.Capitalize :: l' -> post String.capitalize_ascii spc l'
           | B.Term s :: l'     -> spc ^ (cap s) ^ (post (fun s -> s) " " l')
 
 
@@ -40,7 +40,7 @@ module Gen =
     let plain_select seqs = nth seqs (Random.int (length seqs))
 
     let shuffle_select seqs =
-        let seqs' = sort (fun (A.Seq (_, _, r1)) (A.Seq (_, _, r2)) -> compare !r1 !r2) seqs in
+        let seqs' = sort (fun (A.Seq (_, _, r1)) (A.Seq (_, _, r2)) -> Int.compare !r1 !r2) seqs in
         let A.Seq (_, _, max) = nth seqs' (length seqs' - 1) in
         let rec seek seqs n =
             match seqs with
@@ -64,7 +64,7 @@ module Gen =
 		let select = if !do_shuffle then shuffle_select else plain_select in
 
     	let rec declare env lbs decls =
-    		let rec env'= lazy (Env.bind env (map f decls))
+    		let rec env'= lazy (Env.bind env (List.map f decls))
     		and f = function
     			A.Bind (A.Def, sym, p)    -> (sym, fun lbs -> gen_prod (force env') lbs p)
     		 |  A.Bind (A.Assign, sym, p) ->
@@ -92,7 +92,7 @@ module Gen =
               | A.Sel (a', Some lb)  -> gen_atom env (LabelSet.add lb lbs) a'
               | A.Sub (decls, p)     -> gen_prod (declare env lbs decls) lbs p
 
-        and gen_seq env lbs (A.Seq (_, atoms, _)) = flatten (map (gen_atom env lbs) atoms)
+        and gen_seq env lbs (A.Seq (_, atoms, _)) = flatten (List.map (gen_atom env lbs) atoms)
 
         and gen_prod env lbs (A.Prod seqs) =
             let seqs' = if LabelSet.is_empty lbs then seqs

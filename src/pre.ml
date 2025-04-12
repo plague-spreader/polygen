@@ -22,11 +22,11 @@ module Pre =
     let rec comb ll =
         match ll with
             []      -> []
-          | [xs]    -> map (fun x -> [x]) xs
+          | [xs]    -> List.map (fun x -> [x]) xs
           | xs::lls ->
                 let ll' = comb lls
                 in
-                    flatten (map (fun x -> map (fun l -> x::l) ll') xs)
+                    flatten (List.map (fun x -> List.map (fun l -> x::l) ll') xs)
 
 
     (* permutator *)
@@ -36,7 +36,7 @@ module Pre =
             []      -> []
           | [x]     -> [[x]]
           | _       -> let perm h x t =
-                           map (fun l -> x::l) (permute (h @ t))
+                           List.map (fun l -> x::l) (permute (h @ t))
                        in
                        let rec expl l h =
                           match l with
@@ -54,7 +54,7 @@ module Pre =
         in
             match permute (filter is_former mseq) with
                 []     -> [proj mseq []]
-              | mseqs' -> map (proj mseq) mseqs'
+              | mseqs' -> List.map (proj mseq) mseqs'
 
 
     (* preprocessor
@@ -79,7 +79,7 @@ module Pre =
     				A.Bind (_, sym, _) -> (sym, rc)
                  |  A.Import _		   -> raise (Unexpected "import not supported")*)
             in
-                Env.bind env (map f decls)
+                Env.bind env (List.map f decls)
     		
        	and pre_atom env (a, _) =
     		match a with
@@ -94,7 +94,7 @@ module Pre =
                             Former a -> Former (B.Sel (a, lbo))
                           | Latter a -> Latter (B.Sel (a, lbo))
                     in
-                        map f (pre_atom env a') 
+                        List.map f (pre_atom env a') 
 
               | A.Lock u
               | A.Fold u ->
@@ -120,7 +120,7 @@ module Pre =
                             let B.Prod seqs = pre_prod env p*)
                             let B.Prod seqs = pre_prod env (Env.lookup env path)
                             in
-                                map (fun seq -> Latter (B.Sub ([], B.Prod [seq]))) seqs
+                                List.map (fun seq -> Latter (B.Sub ([], B.Prod [seq]))) seqs
 
                       | A.Sub (m, decls, p) ->
                       		let env' = declare env decls in
@@ -128,19 +128,19 @@ module Pre =
                       		let B.Prod seqs = pre_prod env' p
                       		in
                       			(match m with
-                      				A.Mob -> map (fun seq -> Former (sub' seq)) seqs
-    							  | A.Std -> map (fun seq -> Latter (sub' seq)) seqs))
+                      				A.Mob -> List.map (fun seq -> Former (sub' seq)) seqs
+    							  | A.Std -> List.map (fun seq -> Latter (sub' seq)) seqs))
 
 
     	and pre_seq env (A.Seq (lbo, atoms), _) =
-            let mseqs = comb (map (pre_atom env) atoms) in
-            let new_seqs lbo seqs = map (fun seq -> B.Seq (lbo, seq, ref 0)) seqs in
-            let seqs = map (fun mseq -> [B.Sub ([], B.Prod (new_seqs None (arrange mseq)))]) mseqs
+            let mseqs = comb (List.map (pre_atom env) atoms) in
+            let new_seqs lbo seqs = List.map (fun seq -> B.Seq (lbo, seq, ref 0)) seqs in
+            let seqs = List.map (fun mseq -> [B.Sub ([], B.Prod (new_seqs None (arrange mseq)))]) mseqs
             in
 				new_seqs lbo seqs
 
 
-        and pre_prod env (A.Prod seqs, _) = B.Prod (flatten (map (pre_seq env) seqs))
+        and pre_prod env (A.Prod seqs, _) = B.Prod (flatten (List.map (pre_seq env) seqs))
 
 
         and pre_decls env decls =
@@ -150,7 +150,7 @@ module Pre =
                  |  A.Bind (A.Assign, sym, p) -> B.Bind (B.Assign, sym, pre_prod env p)
                  |  A.Import _                -> raise (Unexpected "pre.ml: pre_decl")
     		in
-        		map f decls
+        		List.map f decls
 
        	in
        		pre_decls (declare Env.empty decls) decls
