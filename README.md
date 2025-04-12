@@ -12,13 +12,25 @@ guess-working and Google searches.
 ## Description
 
 This program can generate strings given a type-2 grammar.
-In the `grm` directory there are examples; all of these are
-parodying habits, stereotypes and trends (of Italy in the 2000s).
 
 The grammar meta-language are written in a slightly more expressive version of
 EBNF (Extended Backus-Naur Form).
 Refer to the manuals in the `manual` directory (currently only the Italian
 version is available) or to the `Quick grammar description` below.
+
+In the `grm` directory there are examples; all of these are
+parodying habits, stereotypes and trends (of Italy in the 2000s).
+
+### How to parody (extracted from polygen website)
+A parody is constructed by focusing on one particular topic (a funny one) and
+then by extracting and abstracting as much rules and patterns (in a formal
+grammar fashion).
+
+Polygen will then reproduce it by randomly creating strings according to the
+input grammar. 
+
+Randomicity is perfect for this purpose since it is unpredictable and does not
+follow sentence's semantics.
 
 ## Usage
 
